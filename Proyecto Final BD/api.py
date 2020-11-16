@@ -2,6 +2,7 @@ import redis
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from datetime import date
 
 #Connection to MongoDB
 client = MongoClient('mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false')
@@ -11,6 +12,9 @@ collection = db['movie']
 
 #Connection to redis DB
 r = redis.Redis(host="localhost", port=6379, db=0)
+
+#Información de contexto
+now = date.today()
 
 #def movieName(movie):
 
@@ -55,9 +59,29 @@ def totalMovieTVperYear(year):
     ]
     cursos = list(collection.aggregate(myquery))
 
-#def addMovie():
+def addMovie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
+    query = [
+    {"$match" :{"title":title}}
+    ]
+    cursos = list(collection.aggregate(query))
+    if(len(cursos) > 0):
+        print("Error: The movie name already exists in the database.\n")
+    else:
+        query = {"type": "Movie", "title":title, "director":director, "cast":cast, "country":country, "date_added": date_added, "release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
+        cursos = collection.insert_one(query)
+        print("Movie \'", title, "\' was succesfully added to the database")
 
-#def addTVShow():
+def addTVShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
+    query = [
+    {"$match" :{"title":title}}
+    ]
+    cursos = list(collection.aggregate(query))
+    if(len(cursos) > 0):
+        print("Error: The TV Show name already exists in the database.\n")
+    else:
+        query = {"type": "TV Show", "title":title, "director":director, "cast":cast, "country":country, "date_added": date_added, "release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
+        cursos = collection.insert_one(query)
+        print("TV Show \'", title, "\' was succesfully added to the database")
 
 
 menu = 0
@@ -79,3 +103,29 @@ while menu!= 9:
     elif menu == 5:
         country = input("Name of the country\n")
         totalMovCountry(country)
+    elif menu == 7:
+        title = input("Name of the movie:\n")
+        director = input("Director:\n")
+        cast = input("Movie cast:\n")
+        country = input("Name of the country:\n")
+        date_added = now.strftime("%B %d, %Y")
+        release_year = input("Release year:\n")
+        rating = input("Rating:\n")
+        duration = input("Duration:\n")
+        listed_in = input("Listed in:\n")
+        description = input("Description\n")
+        addMovie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description)
+    elif menu == 8:
+        title = input("Name of the movie:\n")
+        director = input("Director:\n")
+        cast = input("Movie cast:\n")
+        country = input("Name of the country:\n")
+        date_added = now.strftime("%B %d, %Y")
+        release_year = input("Release year:\n")
+        rating = input("Rating:\n")
+        duration = input("Duration:\n")
+        listed_in = input("Listed in:\n")
+        description = input("Description\n")
+        addTVShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description)
+
+
