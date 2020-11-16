@@ -10,31 +10,70 @@ client = MongoClient('mongodb://localhost:27017/?readPreference=primary&appname=
 db = client.proyecto_final
 collection = db['movie']
 
+
 #Connection to redis DB
 r = redis.Redis(host="localhost", port=6379, db=0)
 
+r.config_set("maxmemory", "10000")
 #Información de contexto
 now = date.today()
 
 def movieName(movie):
     try:
         key = "1_"+movie
-        text = r.get(movie).decode("utf-8")
+        text = r.get(key).decode("utf-8")
         print("Redis")
-        print("Total number of movies ", text)
+        print(text)
     except:
         print("Mongo")
         myquery = {"title" : movie}
         cursos = list(collection.find(myquery))
+        
         for doc in cursos:
-            text = "director: " + doc["director"] +"\n " + "cast: " + doc["cast"] +"\n "+ "country: " + doc["country"] +"\n "+ "release_year: " + doc["release_year"] +"\n "
-            key = "1_"+movie
-            r.set(key, text)
-            print("Total number of movies on ", text, " is ", text)
+            if (doc["type"] == "Movie"):
+                text = "director: " + doc["director"] +"\n" + "cast: " + doc["cast"] +"\n"+ "country: " + doc["country"] +"\n"+ "release_year: " + doc["release_year"] +"\n"
+                key = "1_"+movie
+                r.set(key, text)
+                r.expire(key, "60")
+                print(text)
 
-#def actorName(actor):
+def actorName(actor):
+    try:
+        key = "2_"+actor
+        text = r.get(key).decode("utf-8")
+        print("Redis")
+        print(text)
+    except:
+        print("Mongo")
+        myquery = {"cast" : actor}
+        cursos = list(collection.find(myquery))
+        text = ""
+        key = "2_"+movie
+        print("HOLA" , cursos)
+        for doc in cursos:
+            text += doc["title"] +" "
+           
+        print( text)
+        r.set(key, text)
+        r.expire(key, "60")
 
-#def tvShowName(tvShow):
+def tvShowName(tvShow):
+    try:
+        key = "3_"+tvShow
+        text = r.get(key).decode("utf-8")
+        print("Redis")
+        print(text)
+    except:
+        print("Mongo")
+        myquery = {"title" : tvShow}
+        cursos = list(collection.find(myquery))
+        for doc in cursos:
+           if (doc["type"] == "TV Show"):
+                text = "director: " + doc["director"] +"\n" + "cast: " + doc["cast"] +"\n"+ "country: " + doc["country"] +"\n"+ "release_year: " + doc["release_year"] +"\n"
+                key = "3_"+tvShow
+                r.set(key, text)
+                r.expire(key, "60")
+                print(text)
 
 def totalNumMovTV():
     try:
@@ -45,6 +84,7 @@ def totalNumMovTV():
         print("Mongo")
         cursos = collection.count()
         r.set("TotalMovies",cursos)
+        r.expire("TotalMovies", "60")
         print("Total number of movies ", cursos)
    
 
@@ -63,10 +103,11 @@ def totalMovCountry(country):
         cursos = list(collection.aggregate(myquery))
         for doc in cursos:
             r.set(country, doc["total"])
+            r.expire(country, "60")
             print("Total number of movies on ", country, " is ", doc["total"])
 
 def totalMovieTVperYear(year):
-     try:
+    try:
         total = r.get(year).decode("utf-8")
         print("Redis")
         print("The total TV Shows on ", year, " are ", total , end="\n")
@@ -81,6 +122,7 @@ def totalMovieTVperYear(year):
        
         for doc in cursos:
             r.set(year, doc["total"])
+            r.expire(year, "60")
             print("The total TV Shows on ", year," are ", doc["total"],  end="\n")
 
 def addMovie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
@@ -125,12 +167,18 @@ while menu!= 9:
     if menu == 1:
         movie = input("Write the name of the movie\n")
         movieName(movie)
+    elif menu == 2:
+        actor = input("Write the name of the actor\n")
+        actorName(actor)   
+    elif menu == 3:
+        tvShow = input("Write the name of the TV Show\n")
+        tvShowName(tvShow)   
     elif menu == 4:
         totalNumMovTV()
     elif menu == 5:
         country = input("Name of the country\n")
         totalMovCountry(country)
-     elif menu == 6:
+    elif menu == 6:
         year = input("Write the year\n")
         totalMovieTVperYear(year)
     elif menu == 7:
