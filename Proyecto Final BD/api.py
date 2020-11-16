@@ -19,7 +19,16 @@ r = redis.Redis(host="localhost", port=6379, db=0)
 #def tvShowName(tvShow):
 
 def totalNumMovTV():
-    cursos = collection.count()
+    try:
+        total = r.get("TotalMovies").decode("utf-8")
+        print("Redis")
+        print("Total number of movies ", total)
+    except:
+        print("Mongo")
+        cursos = collection.count()
+        r.set("TotalMovies",cursos)
+        print("Total number of movies ", cursos)
+   
 
 
 def totalMovCountry(country):
@@ -52,6 +61,7 @@ def totalMovieTVperYear(year):
 
 
 menu = 0
+
 while menu!= 9:
     print('Menu del Api \n')
     print('1. Give movie name \n')
