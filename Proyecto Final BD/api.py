@@ -14,7 +14,7 @@ collection = db['movie']
 #Connection to redis DB
 r = redis.Redis(host="localhost", port=6379, db=0)
 
-r.config_set("maxmemory", "10000")
+#r.config_set("maxmemory", "10000")
 #Información de contexto
 now = date.today()
 
@@ -45,17 +45,15 @@ def actorName(actor):
         print(text)
     except:
         print("Mongo")
-        myquery = {"cast" : actor}
-        cursos = list(collection.find(myquery))
         text = ""
-        key = "2_"+movie
-        print("HOLA" , cursos)
-        for doc in cursos:
-            text += doc["title"] +" "
-           
+        key = "2_"+actor
+        for doc in collection.find({}, {"cast": "Smita Malhotra"},{"title" : 1, "_id" : 0}):
+            #text += doc["title"] +" "
+            print(doc)
         print( text)
-        r.set(key, text)
-        r.expire(key, "60")
+        #r.set(key, text)
+        
+        #r.expire(key, "60")
 
 def tvShowName(tvShow):
     try:
