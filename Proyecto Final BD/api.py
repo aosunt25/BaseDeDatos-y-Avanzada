@@ -47,13 +47,11 @@ def actorName(actor):
         print("Mongo")
         text = ""
         key = "2_"+actor
-        for doc in collection.find({}, {"cast": "Smita Malhotra"},{"title" : 1, "_id" : 0}):
-            #text += doc["title"] +" "
-            print(doc)
-        print( text)
-        #r.set(key, text)
-        
-        #r.expire(key, "60")
+        for doc in collection.find({}, {"cast": actor, "title" : 1, "_id" : 0}):
+            text+=doc["title"]+"\n"
+        print(text)
+        r.set(key, text)
+        r.expire(key, "60")
 
 def tvShowName(tvShow):
     try:
