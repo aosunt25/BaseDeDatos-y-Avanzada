@@ -14,7 +14,7 @@ collection = db['movie']
 #Connection to redis DB
 r = redis.Redis(host="localhost", port=6379, db=0)
 
-
+r.flushdb()
 #Configure the memory
 '''
  Yes - to set the memory limit just uncomment the maxmemory line in the .conf file.
