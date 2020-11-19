@@ -14,7 +14,15 @@ collection = db['movie']
 #Connection to redis DB
 r = redis.Redis(host="localhost", port=6379, db=0)
 
-#r.config_set("maxmemory", "10000")
+
+#Configure the memory
+'''
+ Yes - to set the memory limit just uncomment the maxmemory line in the .conf file.
+ The default is 0, which means unlimited.
+ change  "#maxmemory <bytes>"
+ to maxmemory <0>
+ '''
+r.config_set("maxmemory", "1000000000")
 #Información de contexto
 now = date.today()
 
