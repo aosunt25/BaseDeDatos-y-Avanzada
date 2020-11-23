@@ -200,7 +200,7 @@ while menu!= 9:
         description = input("Description\n")
         addMovie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description)
     elif menu == 8:
-        title = input("Name of the movie:\n")
+        title = input("Name of the TV Show:\n")
         director = input("Director:\n")
         cast = input("Movie cast:\n")
         country = input("Name of the country:\n")
