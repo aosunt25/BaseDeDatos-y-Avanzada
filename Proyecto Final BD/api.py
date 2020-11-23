@@ -1,3 +1,9 @@
+'''
+Alfredo Osuna 
+Rafael Rojas
+Raul Gonzalez
+'''
+
 import redis
 
 from pymongo import MongoClient
