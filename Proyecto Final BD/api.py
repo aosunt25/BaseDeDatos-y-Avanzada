@@ -114,10 +114,11 @@ def totalMovieTVperYear(year):
     try:
         total = r.get(year).decode("utf-8")
         print("Redis")
-        print("The total TV Shows and Movies on ", year, " are ", total , end="\n")
+        print("The total TV Shows on ", year, " are ", total , end="\n")
     except:
         print("Mongo")
         myquery = [
+            {"$match": {"type":"TV Show"}},
             {"$group": {"_id": "$release_year","total": {"$sum": 1}}},
             {"$match" :{ "_id":year}} 
         ]
@@ -129,6 +130,7 @@ def totalMovieTVperYear(year):
             print("The total TV Shows on ", doc["_id"]," are ", doc["total"],  end="\n")
 
 def addMovie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
+    r.flushdb()
     query = [
     {"$match" :{"title":title}}
     ]
@@ -141,6 +143,7 @@ def addMovie(title, director, cast, country, date_added, release_year, rating, d
         print("Movie \'", title, "\' was succesfully added to the database")
 
 def addTVShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
+    r.flushdb()
     query = [
     {"$match" :{"title":title}}
     ]
